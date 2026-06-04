@@ -1,0 +1,42 @@
+export interface ResultadoValidacion {
+  error: string | null;
+  xmlFile: File | null;
+  pdfFile: File | null;
+}
+
+export function validarArchivos(files: FileList): ResultadoValidacion {
+
+  const archivos = Array.from(files);
+
+  let contadorXML = 0;
+  let contadorPDF = 0;
+
+  let xmlFile: File | null = null;
+  let pdfFile: File | null = null;
+
+  for (const file of archivos) {
+    const ext = file.name.split(".").pop()?.toLowerCase();
+
+    if (ext === "xml") {
+      contadorXML++;
+      xmlFile = file;
+    } else if (ext === "pdf") {
+      contadorPDF++;
+      pdfFile = file;
+    }
+  }
+
+  if (archivos.length > 2) {
+    return { error: "Solo debes seleccionar 2 archivos", xmlFile: null, pdfFile: null };
+  }
+
+  if (archivos.length === 1) {
+    return { error: "Debes seleccionar un XML y un PDF", xmlFile: null, pdfFile: null };
+  }
+
+  if (contadorXML === 2 || contadorPDF === 2) {
+    return { error: "Debes seleccionar 1 XML y 1 PDF", xmlFile: null, pdfFile: null };
+  }
+
+  return { error: null, xmlFile, pdfFile };
+}

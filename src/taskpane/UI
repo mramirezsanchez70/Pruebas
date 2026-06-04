@@ -1,0 +1,15 @@
+export function mostrarModal(mensaje: string) {
+
+  const modal = document.getElementById("modalError") as HTMLElement;
+  const texto = document.getElementById("modalMensaje") as HTMLElement;
+  const btnCerrar = document.getElementById("btnCerrarModal") as HTMLElement;
+
+  if (texto) texto.textContent = mensaje;
+  if (modal) modal.style.display = "block";
+
+  if (btnCerrar) {
+    btnCerrar.onclick = () => {
+      modal.style.display = "none";
+    };
+  }
+}
