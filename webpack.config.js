@@ -95,3 +95,18 @@ module.exports = async (env, options) => {
 
   return config;
 };
+
+module.exports = {
+  resolve: {
+    extensions: [".ts", ".js"]
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: "ts-loader",
+        exclude: /node_modules/
+      }
+    ]
+  }
+};

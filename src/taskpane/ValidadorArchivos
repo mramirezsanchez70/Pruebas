@@ -30,11 +30,12 @@ export function validarArchivos(files: FileList): ResultadoValidacion {
     return { error: "Solo debes seleccionar 2 archivos", xmlFile: null, pdfFile: null };
   }
 
-  if (archivos.length === 1) {
+  if (archivos.length < 2) {
     return { error: "Debes seleccionar un XML y un PDF", xmlFile: null, pdfFile: null };
   }
 
-  if (contadorXML === 2 || contadorPDF === 2) {
+  // ✅ VALIDACIÓN CLAVE
+  if (contadorXML !== 1 || contadorPDF !== 1) {
     return { error: "Debes seleccionar 1 XML y 1 PDF", xmlFile: null, pdfFile: null };
   }
 
