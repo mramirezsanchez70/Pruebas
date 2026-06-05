@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h3>Subir archivo</h3>
+
+<input type="file" id="fileInput" accept=".xml">
+
+<script>
+document.getElementById("fileInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        const xmlText = event.target.result;
+
+        // Convertir texto XML a DOM
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+        // Convertir XML a JSON
+        function xmlToJson(xml) {
+            let obj = {};
+
+            if (xml.nodeType === 1) { // elemento
+                if (xml.attributes.length > 0) {
+                    obj["@attributes"] = {};
+                    for (let i = 0; i < xml.attributes.length; i++) {
+                        const attr = xml.attributes.item(i);
+                        obj["@attributes"][attr.nodeName] = attr.nodeValue;
+                    }
+                }
+            } else if (xml.nodeType === 3) { // texto
+                return xml.nodeValue.trim();
+            }
+
+            if (xml.hasChildNodes()) {
+                for (let i = 0; i < xml.childNodes.length; i++) {
+                    const item = xml.childNodes.item(i);
+                    const nodeName = item.nodeName;
+
+                    const value = xmlToJson(item);
+                    if (value === "") continue;
+
+                    if (typeof(obj[nodeName]) === "undefined") {
+                        obj[nodeName] = value;
+                    } else {
+                        if (!Array.isArray(obj[nodeName])) {
+                            obj[nodeName] = [obj[nodeName]];
+                        }
+                        obj[nodeName].push(value);
+                    }
+                }
+            }
+
+            return obj;
+        }
+
+        const jsonData = xmlToJson(xmlDoc);
+
+        // Convertir a texto JSON bonito
+        const jsonString = JSON.stringify(jsonData, null, 2);
+
+        // Crear contenido JS
+        const jsContent = "const datosXML = " + jsonString + ";";
+
+        // Crear archivo descargable
+        const blob = new Blob([jsContent], { type: "application/javascript" });
+        const url = URL.createObjectURL(blob);
+
+        // Crear link de descarga
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "datos.js";
+        a.click();
+
+        URL.revokeObjectURL(url);
+    };
+
+    reader.readAsText(file);
+});
+</script>
+
+
+</body>
+</html>
